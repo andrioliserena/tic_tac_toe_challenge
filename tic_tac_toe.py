@@ -95,9 +95,13 @@ def main():
     print("Thanks for playing!")
 
 if __name__ == "__main__":
-    # If the input ends (EOFError), say goodbye instead of crashing
+    # If the input ends (EOFError) or the player presses Ctrl+C
+    # (KeyboardInterrupt), say goodbye instead of crashing
     try:
         main()
     except EOFError:
         print()
         print("No more input. Goodbye!")
+    except KeyboardInterrupt:
+        print()
+        print("Game stopped. Goodbye!")
