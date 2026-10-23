@@ -95,4 +95,9 @@ def main():
     print("Thanks for playing!")
 
 if __name__ == "__main__":
-    main()
+    # If the input ends (EOFError), say goodbye instead of crashing
+    try:
+        main()
+    except EOFError:
+        print()
+        print("No more input. Goodbye!")
