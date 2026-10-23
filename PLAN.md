@@ -30,7 +30,9 @@ Index `0–8` in code, the player types `1–9` (we subtract 1).
 ---
 
 ## Stage 1 — Board + display
-- `create_board()`: return `[" "] * 9`.
+- `create_board()`: start with an empty list and `append(" ")` 9 times in a
+  `for` loop, then return it (a loop instead of `[" "] * 9` keeps it within
+  the 4–10 line rule).
 - `print_board(board)`: print 3 rows `" X | O |  "` with `---+---+---` between them
   (loop over row starts `0, 3, 6`).
 - `main()` (temporary): print a welcome line + the numbered guide, create a board,
@@ -51,16 +53,20 @@ Index `0–8` in code, the player types `1–9` (we subtract 1).
 ## Stage 3 — Win detection
 - `check_winner(board)`: a list `WINNING_LINES` of the 8 index triples (3 rows,
   3 columns, 2 diagonals); loop over them and return the symbol (`"X"`/`"O"`) if all
-  three squares are equal and not `" "`, else return `None`. (The assignment's `all()`
-  tip fits here.)
+  three squares are equal and not `" "`, else return `None`. The check is
+  `board[a] != " " and board[a] == board[b] == board[c]` (simpler to read than
+  the assignment's `all()` tip).
 - `play_round()`: after each move, if `check_winner(board)` → print "Player X wins!"
   and `return` (ends the round).
 - **Check:** play a row, a column and a diagonal win; game stops immediately.
 
 ## Stage 4 — Draw detection + play again
-- `check_draw(board)`: return `" " not in board`.
-- `play_round()`: switch from `for` to `while True`; after the win check,
-  if `check_draw(board)` → print "It's a draw!" and `return`.
+- `check_draw(board)`: loop over the squares, return `False` at the first `" "`,
+  else return `True` (as in the pseudocode).
+- `play_round()`: switch from `for` to `while not check_draw(board):`; when the
+  loop ends without a winner, print "It's a draw!". The win check runs first, so
+  a win on the last square counts as a win. (A `while True` with a separate draw
+  check would make the function 12 lines.)
 - `main()`: wrap in a loop — after a round, ask "Play again? (y/n)"; stop on `n`
   (the "start a new game or quit" part of the pseudocode).
 - **Check:** fill the board without a winner → draw message; replay works.
@@ -69,10 +75,21 @@ Index `0–8` in code, the player types `1–9` (we subtract 1).
 - `choose_player()`: `while True` loop — repeat until input is `"X"` or `"O"`,
   else print "Invalid input".
 - `ask_move(board, player)`: `while True` loop —
-  - if input is not `.isdigit()` or not 1–9 → "Please enter a number from 1 to 9"
+  - if input is not in the list `"1"`–`"9"` → "Please enter a number from 1 to 9"
+    (safer than `.isdigit()`, which lets through characters like `²` that crash `int()`)
   - elif square taken → "That square is taken, choose another"
   - else place the symbol and `return`.
 - **Check:** try `abc`, `0`, `10`, empty input, an occupied square, lowercase `x`.
+
+## Extra — Quit cleanly (EOF and Ctrl+C)
+- In the `if __name__ == "__main__":` block, wrap `main()` in `try` / `except`
+  so the game says goodbye instead of showing a traceback:
+  - `except EOFError` → "No more input. Goodbye!" (input ran out, e.g. Ctrl+D
+    or running without a keyboard)
+  - `except KeyboardInterrupt` → "Game stopped. Goodbye!" (player pressed Ctrl+C)
+- One wrapper covers every `input()` call, so no function changes.
+- **Check:** press Ctrl+D and Ctrl+C at each question (symbol, square,
+  play again) → goodbye message, no traceback.
 
 ---
 
